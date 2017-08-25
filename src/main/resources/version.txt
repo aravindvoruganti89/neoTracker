@@ -1,0 +1,6 @@
+owner           = Aravind Voruganti
+software        = ${project.artifactId}
+description     = ${project.description}
+version         = ${project.version}
+releaseDate     = ${timestamp}
+java            = ${java.version}

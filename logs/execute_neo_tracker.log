@@ -1,0 +1,2 @@
+2017-08-25 01:45:08,009 INFO - Setting the NEO tracker configs
+2017-08-25 01:45:08,181 INFO - Invoking HTTP GET Request: JerseyWebTarget { https://api.nasa.gov/neo/rest/v1/feed/today?detailed=true&api_key=or5pBA05iPZ2FJjk2zTR2EBFivUJmAnM0kKLJYw0 }
