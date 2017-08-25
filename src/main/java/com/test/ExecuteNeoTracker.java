@@ -36,6 +36,7 @@ public class ExecuteNeoTracker {
     public String neoRestURI = "https://api.nasa.gov/neo/rest/v1";
     public WebTarget neoFeedTarget;
     public WebTarget neoLookupTarget;
+    public WebTarget neoStatsTarget;
     public WebTarget neoBrowseTarget;
     public JSONParser jsonParser = new JSONParser();
     public SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -55,6 +56,9 @@ public class ExecuteNeoTracker {
             neoRestClient = ClientBuilder.newClient();
             neoWebTarget = neoRestClient.target(neoRestURI);
 
+            // get the total NEO count
+            executeStatsApi();
+
             //feed API for today
             executeFeedApi();
 
@@ -73,6 +77,30 @@ public class ExecuteNeoTracker {
 
         }catch(Exception e){
             executeNeoTrackerLogger.error("Problem reading configs ",e);
+        }
+        return true;
+    }
+
+    public boolean executeStatsApi(){
+        try{
+            neoStatsTarget = neoWebTarget.path("stats").queryParam("api_key", neoSettingsObj.get("api_key"));
+            executeNeoTrackerLogger.info("Invoking the HTTP GET request: "+neoStatsTarget);
+
+            Invocation.Builder invocationBuilder = neoStatsTarget.request(MediaType.APPLICATION_JSON_TYPE);
+            Response response = invocationBuilder.get();
+
+            String obj = response.readEntity(String.class);
+            JSONObject responseObj = (JSONObject) jsonParser.parse(obj);
+
+            if (responseObj.get("near_earth_object_count") == null){
+                executeNeoTrackerLogger.error("Failed to get the near_earth_object_count...skipping this method");
+                return  false;
+            }
+
+            int elementCount = Integer.valueOf(responseObj.get("near_earth_object_count").toString());
+            executeNeoTrackerLogger.info("Total near_earth_object_count: "+elementCount);
+        }catch(Exception e){
+            executeNeoTrackerLogger.error("Problem executing the executeStatsApi ",e);
         }
         return true;
     }
